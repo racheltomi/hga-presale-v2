@@ -27,6 +27,30 @@
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  /* Glass booklet loupe (no tilt — kept calm for this version) */
+  const booklet = $("#booklet");
+  if (booklet) {
+    const stage = $(".booklet-inner", booklet);
+    const img = $("img", stage);
+    const lens = $(".booklet-lens", stage);
+    const ZOOM = 2.4;
+    const move = (e) => {
+      const r = stage.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";
+      lens.style.backgroundSize = img.clientWidth * ZOOM + "px " + img.clientHeight * ZOOM + "px";
+      lens.style.backgroundPosition = -(x * ZOOM - lens.offsetWidth / 2) + "px " + -(y * ZOOM - lens.offsetHeight / 2) + "px";
+      booklet.classList.add("lens-on");
+    };
+    const leave = () => booklet.classList.remove("lens-on");
+    stage.addEventListener("pointermove", move);
+    stage.addEventListener("pointerdown", move);
+    stage.addEventListener("pointerleave", leave);
+    stage.addEventListener("pointercancel", leave);
+  }
+
   /* Video modal (placeholder) */
   const modal = $("#videoModal");
   let opener = null;
